@@ -134,13 +134,10 @@ class TelloUI:
                 if self.frame is None or self.frame.size == 0:
                     continue
 
-                # detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-                #
-                # gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-                # faces = detector.detectMultiScale(detector, 1.3, 5)
-                # for (x, y, w, h) in faces:
-                #     cv2.rectangle(self.frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
+                integral_y = 0
+                integral_x = 0
+                previous_error_y = 0
+                start_time = time.time()
                 hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
                 low_red = np.array([120, 150, 50], np.uint8)
                 high_red = np.array([150, 255, 255], np.uint8)
@@ -162,11 +159,11 @@ class TelloUI:
                 cv2.putText(self.frame, '{},{}'.format(SET_POINT_X, SET_POINT_Y), (SET_POINT_X, SET_POINT_Y),
                             font, 0.75, (255, 255, 255), 1,
                             cv2.LINE_AA)
-                start_time = time.time()
                 for cnt in contorno:
                     area = cv2.contourArea(cnt)
                     approx = cv2.approxPolyDP(cnt, 0.03 * cv2.arcLength(cnt, True), True)
                     if area > 2000:
+                        # start_time = time.time()
                         M = cv2.moments(cnt)
                         if (M["m00"] == 0): M["m00"] = 1
                         x = int(M["m10"] / M["m00"])
@@ -175,18 +172,22 @@ class TelloUI:
                         cv2.circle(self.frame, (x, y), 7, (0, 0, 255), -1)
                         cv2.drawContours(self.frame, [nuevoContorno], -1, (0, 255, 0), 5)
                         # start_time = time.time()
-                        previous_error_y = 0
 
                         if len(approx) == 4:
                             delay_pid = time.time() - start_time
+                            # start_time = time.time()
                             # tiempo_transcurrido = time.clock() - tiempo_inicial
                             # elapsed_time = time() - start_time
-                            # mensaje80 = "tiempo =" + str(tiempo_transcurrido)
-                            # cv2.putText(self.frame, mensaje80, (10, 90), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
-                            kp = 0.0022
-                            ki = 0.3
-                            kd = 0.2
-                            kpmove = 0.0022
+                            mensaje80 = "tiempo =" + str(delay_pid)
+                            cv2.putText(self.frame, mensaje80, (10, 90), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
+                            kpy = 0.0022
+                            kiy = 0.0008
+                            # kdy = 0.02
+
+                            kpx = 0.0022
+                            kix = 0.0008
+
+                            # kpx = 0.0022
                             w = 17
                             medidas = cv2.minAreaRect(nuevoContorno)
                             p = medidas[1][0]
@@ -196,25 +197,33 @@ class TelloUI:
                             errory = y - SET_POINT_Y
                             # mensaje = "Distancia =" + str(round(distancia, 2)) + " cm"
                             # erroryn = errory * kp
-                            # derivative_y = (errory - previous_error_y) / delay_pid
-                            pi = kp * errory + ki + errory*delay_pid
+                            derivative_y = (errory - previous_error_y) / delay_pid
+                            # integral_y = integral_y + errory * delay_pid
+                            # pi = kpy * errory + kiy*integral_y
+                            integral_y = integral_y + errory * delay_pid
+                            integral_x = integral_x + errorx * delay_pid
+                            piy = kpy * errory + kiy * integral_y
+                            pix = kpx * errorx + kix * integral_x
+                            # pi = kp * errory + ki + errory * delay_pid
+                            # pid = kpy * errory + kiy * integral_y + kdy * derivative_y
+                            mensaje90 = "value pi =" + str(piy)
+                            cv2.putText(self.frame, mensaje90, (10, 130), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
                             # pid = kp * errory + ki + errory * delay_pid + kd * errory / derivative_y
-                            # previous_error_y = errory
-                            if pi >= 0:
-                                self.telloDown(pi)
+
+                            if piy >= 0:
+                                self.telloDown(piy)
+                                previous_error_y = errory
                             else:
-                                errory2n = pi*(-1)
+                                errory2n = piy*(-1)
                                 self.telloUp(errory2n)
-                            # errorxn = errorx * kpmove
-                            # if errorxn >= 0:
-                            #     self.telloMoveRight(errorxn)
-                            # else:
-                            #     errorx2n = errorxn*(-1)
-                            #     self.telloMoveLeft(errorx2n)
+                            if pix >= 0:
+                                self.telloMoveRight(pix)
+                            else:
+                                errorx2n = pix*(-1)
+                                self.telloMoveLeft(errorx2n)
                             # cv2.putText(self.frame, mensaje, (10, 70), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
                             # cv2.putText(self.frame, '{},{}'.format(x, y), (x-60, y+45), font, 0.75, (0, 255, 0), 1,
                             #             cv2.LINE_AA)
-
                             # if distancia > 100:
                             #     distancia2 = distancia - 100
                             #     self.telloMoveForward(distancia2/100)
