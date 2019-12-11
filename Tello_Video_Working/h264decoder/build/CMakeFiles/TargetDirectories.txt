@@ -1,0 +1,7 @@
+/media/charlie/Work/Doctorado/Cursos/Cursos de Profundización/Control ServoVisual/2019/Drone/Tello-Python-master (1)/Tello_Video/h264decoder/build/CMakeFiles/install/strip.dir
+/media/charlie/Work/Doctorado/Cursos/Cursos de Profundización/Control ServoVisual/2019/Drone/Tello-Python-master (1)/Tello_Video/h264decoder/build/CMakeFiles/edit_cache.dir
+/media/charlie/Work/Doctorado/Cursos/Cursos de Profundización/Control ServoVisual/2019/Drone/Tello-Python-master (1)/Tello_Video/h264decoder/build/CMakeFiles/h264decoder.dir
+/media/charlie/Work/Doctorado/Cursos/Cursos de Profundización/Control ServoVisual/2019/Drone/Tello-Python-master (1)/Tello_Video/h264decoder/build/CMakeFiles/rebuild_cache.dir
+/media/charlie/Work/Doctorado/Cursos/Cursos de Profundización/Control ServoVisual/2019/Drone/Tello-Python-master (1)/Tello_Video/h264decoder/build/CMakeFiles/list_install_components.dir
+/media/charlie/Work/Doctorado/Cursos/Cursos de Profundización/Control ServoVisual/2019/Drone/Tello-Python-master (1)/Tello_Video/h264decoder/build/CMakeFiles/install/local.dir
+/media/charlie/Work/Doctorado/Cursos/Cursos de Profundización/Control ServoVisual/2019/Drone/Tello-Python-master (1)/Tello_Video/h264decoder/build/CMakeFiles/install.dir
